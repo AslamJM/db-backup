@@ -6,19 +6,29 @@ import (
 	"time"
 
 	"github.com/AslamJM/db-backup/config"
+	"github.com/AslamJM/db-backup/internal/logger"
 )
 
 // format the backup file name and date like this: dbname_2023-04-15.sql
 func backupFileName(dbName string, ext string) string {
-	date := time.Now().Format("15-04-2023")
+	date := time.Now().Format("02-01-2006")
 	return dbName + "_" + date + ext
 }
 
-func BackupMySQL(cfgFileName string) error {
+func BackupMySQL(cfgFileName string) {
+
+	errLogger := logger.ErrorLog
+
 	cfg, err := config.GetConfigFromJSON(cfgFileName)
 
 	if err != nil {
-		return err
+		errLogger.Printf("error reading config: %s: %v\n", cfgFileName, err)
+	}
+
+	dbLog, err := logger.GetLogger(cfg.DBName)
+
+	if err != nil {
+		errLogger.Printf("error getting logger: %s: %v\n", cfg.DBName, err)
 	}
 
 	bfile := backupFileName(cfg.DBName, ".sql")
@@ -28,7 +38,7 @@ func BackupMySQL(cfgFileName string) error {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		return err
+		dbLog.Println("backup failed: ", err)
 	}
 
 	EnsureDir(fmt.Sprintf("%s/%s", outputDir, cfg.OutDir))
@@ -37,6 +47,10 @@ func BackupMySQL(cfgFileName string) error {
 
 	err = SaveToLocal(filePath, output)
 
-	return err
+	if err != nil {
+		dbLog.Println("error saving backup: ", err)
+	} else {
+		dbLog.Println("successfully done backup")
+	}
 
 }

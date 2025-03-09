@@ -2,19 +2,13 @@ package main
 
 import (
 	"fmt"
-	"os"
-
-	"github.com/AslamJM/db-backup/internal/backup"
+	"time"
 )
 
 func main() {
-	err := backup.BackupMySQL("config.json")
+	// logger.InitErrorLog()
+	// backup.RunConcurrentBackups()
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-
-	fmt.Println("Backup completed successfully")
+	fmt.Println(time.Now().Format("02-01-2006"))
 
 }

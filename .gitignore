@@ -1,4 +1,6 @@
 outputs/
+logs/
+conf_files/
 # Binaries for programs and plugins
 *.exe
 *.dll

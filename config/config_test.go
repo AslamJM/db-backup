@@ -2,7 +2,11 @@ package config
 
 import (
 	"os"
+	"path/filepath"
+	"reflect"
 	"testing"
+
+	"github.com/AslamJM/db-backup/internal/utils"
 )
 
 func TestGetConfigFromJSON(t *testing.T) {
@@ -54,4 +58,35 @@ func TestGetConfigFromJSON(t *testing.T) {
 	if config.DBName != "test" {
 		t.Errorf("Expected %s, got %s", "test", config.DBName)
 	}
+}
+
+func TestGetAllConfigFiles(t *testing.T) {
+	var tempFiles = []string{
+		"test1.json", "test2", "test3.json", "test4.txt",
+	}
+
+	if err := utils.EnsureDir(confFilesDir); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tf := range tempFiles {
+		f, err := os.Create(filepath.Join(confFilesDir, tf))
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.Close()
+	}
+	cfdir, _ := filepath.Abs(confFilesDir)
+	defer os.RemoveAll(cfdir)
+
+	expected := []string{
+		filepath.Join(confFilesDir, "test1.json"),
+		filepath.Join(confFilesDir, "test3.json"),
+	}
+	out := GetAllConfigFiles()
+
+	if !reflect.DeepEqual(expected, out) {
+		t.Errorf("test failed: expected: %v got: %v\n", expected, out)
+	}
+
 }

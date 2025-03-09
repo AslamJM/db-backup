@@ -14,12 +14,12 @@ const errorLogFile = "errors.log"
 
 var ErrorLog *log.Logger
 
-func GetLogger(dbname string) (*log.Logger, error) {
+func GetLogger(dbname string) (*log.Logger, *os.File, error) {
 	var Log *log.Logger
 	err := utils.EnsureDir(logDir)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	path := filepath.Join(logDir, fmt.Sprintf("%s.log", dbname))
@@ -27,30 +27,28 @@ func GetLogger(dbname string) (*log.Logger, error) {
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	defer file.Close()
-
 	Log = log.New(file, "", log.Ldate|log.Ltime)
-	return Log, nil
+	return Log, file, nil
 }
 
-func InitErrorLog() {
+func InitErrorLog() (*os.File, error) {
 	err := utils.EnsureDir(logDir)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	file, err := os.OpenFile(filepath.Join(logDir, errorLogFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	defer file.Close()
-
 	ErrorLog = log.New(file, "", log.Ldate|log.Ltime)
+
+	return file, nil
 
 }

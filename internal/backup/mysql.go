@@ -17,28 +17,33 @@ func backupFileName(dbName string, ext string) string {
 
 func BackupMySQL(cfgFileName string) {
 
-	errLogger := logger.ErrorLog
-
 	cfg, err := config.GetConfigFromJSON(cfgFileName)
 
 	if err != nil {
-		errLogger.Printf("error reading config: %s: %v\n", cfgFileName, err)
+		logger.ErrorLog.Printf("error reading config %s : %v\n", cfgFileName, err)
+		return
 	}
 
-	dbLog, err := logger.GetLogger(cfg.DBName)
+	dbLog, file, err := logger.GetLogger(cfg.DBName)
 
+	// early returns
 	if err != nil {
-		errLogger.Printf("error getting logger: %s: %v\n", cfg.DBName, err)
+		logger.ErrorLog.Printf("error getting logger for %s : %v\n", cfg.DBName, err)
+		return
 	}
+	defer file.Close()
 
 	bfile := backupFileName(cfg.DBName, ".sql")
 
-	cmd := exec.Command("mysqldump", "-h", cfg.Host, "-u", cfg.User, fmt.Sprintf("-p%s", cfg.Password), cfg.DBName)
+	// append the db user password to the command env
+	// otherwise it will prompt even if you add to the -p%pw
+	cmd := exec.Command("mysqldump", "-h", cfg.Host, "-u", cfg.User, cfg.DBName)
+	cmd.Env = append(cmd.Env, fmt.Sprintf("MYSQL_PWD=%s", cfg.Password))
 
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		dbLog.Println("backup failed: ", err)
+		dbLog.Println("❌ backup failed: ", err)
 	}
 
 	EnsureDir(fmt.Sprintf("%s/%s", outputDir, cfg.OutDir))
@@ -48,9 +53,9 @@ func BackupMySQL(cfgFileName string) {
 	err = SaveToLocal(filePath, output)
 
 	if err != nil {
-		dbLog.Println("error saving backup: ", err)
+		dbLog.Println("❌ error saving backup: ", err)
 	} else {
-		dbLog.Println("successfully done backup")
+		dbLog.Println("✅ successfully done backup")
 	}
 
 }

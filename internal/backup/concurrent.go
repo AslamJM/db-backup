@@ -1,7 +1,6 @@
 package backup
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/AslamJM/db-backup/config"
@@ -19,5 +18,4 @@ func RunConcurrentBackups() {
 		}(cfg)
 	}
 	wg.Wait()
-	fmt.Println("🎉 All database backups completed.")
 }

@@ -11,6 +11,7 @@ import (
 )
 
 type DBConfig struct {
+	Type     string `json:"type"`
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
 	User     string `json:"user"`
@@ -59,6 +60,12 @@ func GetAllConfigFiles() []string {
 	}
 
 	for _, f := range files {
+
+		// skip the sample file
+		if f.Name() == "__sample.json" {
+			continue
+		}
+
 		if strings.HasSuffix(f.Name(), ".json") {
 			out = append(out, filepath.Join(confFilesDir, f.Name()))
 		}

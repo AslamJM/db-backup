@@ -19,12 +19,14 @@ func TestGetConfigFromJSON(t *testing.T) {
 	defer os.Remove(file.Name())
 
 	sample :=
-		`{
+		`{		
+				"type":"mysql",
 				"host": "localhost",
 				"port": 3306,
 				"user":"root",
 				"password":"root",
-				"database":"test"
+				"database":"test",
+				"output_dir":"test"
 		 }	
 			`
 
@@ -37,6 +39,10 @@ func TestGetConfigFromJSON(t *testing.T) {
 	config, err := GetConfigFromJSON(file.Name())
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if config.Type != "mysql" {
+		t.Errorf("Expected %s, got %s", "localhost", config.Type)
 	}
 
 	if config.Host != "localhost" {
@@ -58,11 +64,15 @@ func TestGetConfigFromJSON(t *testing.T) {
 	if config.DBName != "test" {
 		t.Errorf("Expected %s, got %s", "test", config.DBName)
 	}
+
+	if config.OutDir != "test" {
+		t.Errorf("Expected %s, got %s", "test", config.OutDir)
+	}
 }
 
 func TestGetAllConfigFiles(t *testing.T) {
 	var tempFiles = []string{
-		"test1.json", "test2", "test3.json", "test4.txt",
+		"test1.json", "test2", "test3.json", "test4.txt", "test3.jsonc", "sample.json.js",
 	}
 
 	if err := utils.EnsureDir(confFilesDir); err != nil {

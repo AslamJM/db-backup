@@ -2,11 +2,12 @@ package backup
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestBackupPostgres(t *testing.T) {
-	file, err := os.CreateTemp("conf_files", "pg-test.json")
+	file, err := os.Create(filepath.Join("conf_files", "pg-test.json"))
 
 	if err != nil {
 		t.Fatal(err)
@@ -22,9 +23,9 @@ func TestBackupPostgres(t *testing.T) {
 			"host": "localhost",
 			"type": "pg",
 			"port": 5432,
-			"user": "dev",
+			"user": "db_admin",
 			"password": "123456",
-			"database": "feedbacksdb",
+			"database": "leave_app",
 			"output_dir": "out"
 			}
 		`
@@ -33,5 +34,18 @@ func TestBackupPostgres(t *testing.T) {
 	}
 
 	BackupPostgres(file.Name())
+
+	expectedOutput := filepath.Join("outputs", "leave_app")
+
+	dir, err := os.ReadDir(expectedOutput)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.RemoveAll(expectedOutput)
+
+	if len(dir) == 0 {
+		t.Error("expected directory to be not empty")
+	}
 
 }

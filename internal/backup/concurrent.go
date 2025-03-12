@@ -11,7 +11,7 @@ func RunBackup(cfgName string) {
 	cfg, err := config.GetConfigFromJSON(cfgName)
 
 	if err != nil {
-		logger.ErrorLog.Print("❌ error reading config %s: %v", cfgName, err)
+		logger.ErrorLog.Printf("❌ error reading config %s: %v", cfgName, err)
 	}
 
 	if cfg.Type == "pg" {

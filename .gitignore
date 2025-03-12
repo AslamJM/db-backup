@@ -27,3 +27,5 @@ go.work
 # Build directories
 bin/
 build/
+
+.env

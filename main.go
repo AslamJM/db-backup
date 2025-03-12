@@ -6,10 +6,17 @@ import (
 
 	"github.com/AslamJM/db-backup/internal/backup"
 	"github.com/AslamJM/db-backup/internal/logger"
+	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
 )
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	file, err := logger.InitErrorLog()
 
 	if err != nil {
@@ -17,7 +24,7 @@ func main() {
 	}
 
 	c := cron.New()
-	_, err = c.AddFunc("40 11 * * *", func() {
+	_, err = c.AddFunc(os.Getenv("CRON_TIME"), func() {
 		backup.RunConcurrentBackups()
 	})
 

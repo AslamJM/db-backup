@@ -9,13 +9,19 @@ import (
 	"github.com/AslamJM/db-backup/internal/utils"
 )
 
-const logDir = "logs"
 const errorLogFile = "errors.log"
 
 var ErrorLog *log.Logger
 
+func getLogsDir() string {
+	return os.Getenv("LOGS_DIR")
+}
+
 func GetLogger(dbname string) (*log.Logger, *os.File, error) {
 	var Log *log.Logger
+
+	logDir := getLogsDir()
+
 	err := utils.EnsureDir(logDir)
 
 	if err != nil {
@@ -35,6 +41,9 @@ func GetLogger(dbname string) (*log.Logger, *os.File, error) {
 }
 
 func InitErrorLog() (*os.File, error) {
+
+	logDir := getLogsDir()
+
 	err := utils.EnsureDir(logDir)
 
 	if err != nil {

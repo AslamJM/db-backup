@@ -30,6 +30,8 @@ func BackupPostgres(cfg *config.DBConfig) {
 		dbLog.Println("❌ backup failed: ", err)
 	}
 
+	outputDir := GetOutputDir()
+
 	EnsureDir(fmt.Sprintf("%s/%s", outputDir, cfg.OutDir))
 
 	filePath := fmt.Sprintf("%s/%s/%s", outputDir, cfg.OutDir, bfile)

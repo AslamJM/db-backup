@@ -75,6 +75,8 @@ func TestGetAllConfigFiles(t *testing.T) {
 		"test1.json", "test2", "test3.json", "test4.txt", "test3.jsonc", "sample.json.js",
 	}
 
+	confFilesDir := GetEnv("CONF_FILES_DIR")
+
 	if err := utils.EnsureDir(confFilesDir); err != nil {
 		t.Fatal(err)
 	}

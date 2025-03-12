@@ -37,9 +37,17 @@ func BackupMySQL(cfg *config.DBConfig) {
 
 	if err != nil {
 		dbLog.Println("❌ backup failed: ", err)
+		return
 	}
 
-	EnsureDir(fmt.Sprintf("%s/%s", outputDir, cfg.OutDir))
+	outputDir := GetOutputDir()
+
+	err = EnsureDir(fmt.Sprintf("%s/%s", outputDir, cfg.OutDir))
+
+	if err != nil {
+		dbLog.Println("❌ backup failed: error creating outputdir: ", err)
+		return
+	}
 
 	filePath := fmt.Sprintf("%s/%s/%s", outputDir, cfg.OutDir, bfile)
 

@@ -20,8 +20,6 @@ type DBConfig struct {
 	OutDir   string `json:"output_dir"`
 }
 
-const confFilesDir = "conf_files"
-
 func GetConfigFromJSON(fileName string) (*DBConfig, error) {
 	file, err := os.OpenFile(fileName, os.O_RDONLY, 0644)
 	if err != nil {
@@ -43,6 +41,9 @@ func GetConfigFromJSON(fileName string) (*DBConfig, error) {
 // get all files names ends with .json
 // get the files in the confFileDir
 func GetAllConfigFiles() []string {
+
+	confFilesDir := GetEnv("CONF_FILES_DIR")
+
 	err := utils.EnsureDir(confFilesDir)
 
 	if err != nil {

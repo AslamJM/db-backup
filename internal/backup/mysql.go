@@ -15,14 +15,7 @@ func backupFileName(dbName string, ext string) string {
 	return dbName + "_" + date + ext
 }
 
-func BackupMySQL(cfgFileName string) {
-
-	cfg, err := config.GetConfigFromJSON(cfgFileName)
-
-	if err != nil {
-		logger.ErrorLog.Printf("error reading config %s : %v\n", cfgFileName, err)
-		return
-	}
+func BackupMySQL(cfg *config.DBConfig) {
 
 	dbLog, file, err := logger.GetLogger(cfg.DBName)
 
